@@ -111,10 +111,4 @@ This project is licensed under the MIT License. See `LICENSE` for details.
 
 ---
 
-## Contact
-For questions or collaborations, please contact:
-- **Name**: [Your Name]
-- **Email**: [Your Email]
-- **LinkedIn**: [Your LinkedIn Profile]
-- **GitHub**: [Your GitHub Profile]
 
