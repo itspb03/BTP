@@ -42,7 +42,6 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
 ├── data/               # Input datasets from Pressure Cells and MPBX
 ├── models/             # Machine Learning and Deep Learning models
 ├── dashboard/          # Dash application files
-├── visualizations/     # Plotting scripts for data visualization
 ├── results/            # Model evaluation metrics and plots
 ├── README.md           # Project overview and details (this file)
 └── requirements.txt    # Python dependencies
@@ -82,12 +81,7 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
      python models/train_gru.py
      ```
 
-3. **Visualize Results**:
-   - Use the scripts in `visualizations/` to generate custom plots.
-   - Example:
-     ```bash
-     python visualizations/plot_pressure_trends.py
-     ```
+
 
 ---
 
