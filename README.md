@@ -78,7 +78,8 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
    - Scripts for training LSTM, GRU, and RF models are in the `models/` directory.
    - Example:
      ```bash
-     python models/train_gru.py
+     python models/LSTM.py && python models/GRU.py && python models/RF.py
+ 
      ```
 
 
