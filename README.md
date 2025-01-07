@@ -53,11 +53,11 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your_username/strata-monitoring.git
+   git clone https://https://github.com/itspb03/BTP.GIT
    ```
 2. Navigate to the project directory:
    ```bash
-   cd strata-monitoring
+   cd BTP
    ```
 3. Install the required Python packages:
    ```bash
