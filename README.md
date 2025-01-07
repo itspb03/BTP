@@ -53,7 +53,7 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
 
 1. Clone this repository:
    ```bash
-   git clone https://https://github.com/itspb03/BTP.GIT
+   git clone https://https://github.com/itspb03/BTP.git
    ```
 2. Navigate to the project directory:
    ```bash
