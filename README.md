@@ -10,7 +10,7 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
 ## Key Features
 
 1. **Data Visualization Dashboard**
-   - Developed an interactive dashboard using **Dash**, **NumPy**, and **Pandas**.
+   - Developed an interactive dashboard using **Streamlit**, **NumPy**, and **Pandas**.
    - Supports extraction and plotting of real-time data from:
      - **10 Pressure Cells**
      - **7 MPBX (Multiple Point Borehole Extensometers)**
