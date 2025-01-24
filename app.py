@@ -468,4 +468,4 @@ def update_graph(selected_plot, plot_type, selected_collar_depths, selected_mode
 
 # Run the Dash app
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+    app.run_server(debug=True, port=10000)
