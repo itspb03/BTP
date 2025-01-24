@@ -105,6 +105,7 @@ for i in range(0, len(name), 3):
 
 
 app = Dash(__name__)
+server = app.server
 
 # Extend the dropdown options to include both MPBX and Pressure plots
 dropdown_options = [{'label': f'MPBX - {i+1} Plot', 'value': f'MPBX-{i}'} for i in range(len(combined_dfs))]
