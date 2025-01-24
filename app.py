@@ -4,8 +4,8 @@ import plotly.graph_objects as go
 import streamlit as st
 
 # Load Excel sheets
-mpbx_data = pd.read_excel(r"C:\Users\prana\BTP\MPBX AS ON 03.10.2024.xlsx", sheet_name=None)
-pressure_data = pd.read_excel(r"C:\Users\prana\BTP\PRESSURE CELL AS ON 03.10.2024.xlsx", sheet_name=None)
+mpbx_data = pd.read_excel(r"data/MPBX AS ON 13.11.2024.xlsx", sheet_name=None)
+pressure_data = pd.read_excel(r"", sheet_name=None)
 
 pd.set_option('future.no_silent_downcasting', True)
 
