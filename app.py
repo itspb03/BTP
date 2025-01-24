@@ -5,7 +5,7 @@ import streamlit as st
 
 # Load Excel sheets
 mpbx_data = pd.read_excel(r"https://github.com/itspb03/BTP/blob/main/data/MPBX%20AS%20ON%2013.11.2024.xlsx", sheet_name=None)
-pressure_data = pd.read_excel(r"data/PRESSURE CELL AS ON 13.11.2024.xlsx", sheet_name=None)
+pressure_data = pd.read_excel(r"https://github.com/itspb03/BTP/blob/main/data/PRESSURE%20CELL%20AS%20ON%2013.11.2024.xlsx", sheet_name=None)
 
 pd.set_option('future.no_silent_downcasting', True)
 
