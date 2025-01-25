@@ -119,7 +119,7 @@ if plot_type == "MPBX":
                 )
 
             collar_depth_3 = (
-                    str(date_df['Collar Depth 3'].iloc[0])[:3] 
+                    str(subset['Collar Depth 3'].iloc[0])[:3] 
                     if isinstance(subset['Collar Depth 3'].iloc[0], str) 
                     else str(int(subset['Collar Depth 3'].iloc[0])) 
                     if not math.isnan(subset['Collar Depth 3'].iloc[0]) 
