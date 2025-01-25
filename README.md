@@ -39,9 +39,8 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
 
 ```
 .
-├── data/               # Input datasets from Pressure Cells and MPBX
 ├── models/             # Machine Learning and Deep Learning models
-├── dashboard/          # Dash application files
+├── dashboard/          # streamlit application files and datasets
 ├── results/            # Model evaluation metrics and plots
 ├── README.md           # Project overview and details (this file)
 └── requirements.txt    # Python dependencies
@@ -69,11 +68,8 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
 ## Usage
 
 1. **Run the Dashboard**:
-    *(Make sure to update file path in app.py)*
-   ```bash
-   python dashboard/app.py
-   ```
-   Open the app in your browser at `http://localhost:8050`.
+    
+   Open the app in your browser at `(https://stratamonitoring.streamlit.app/)`.
 
 3. **Train Models**:
    - Scripts for training LSTM, GRU, and RF models are in the `models/` directory.
