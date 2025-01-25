@@ -89,9 +89,9 @@ if plot_type == "MPBX":
         st.plotly_chart(fig)
     
     elif plot_option == "Displacement vs Length along MPBX":
-        date1 = st.multiselect("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[0]] )
-        date2 = st.multiselect("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[1]] )
-        date3 = st.multiselect("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[2]] )
+        date1 = st.selectbox("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[0]] )
+        date2 = st.selectbox("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[1]] )
+        date3 = st.selectbox("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[2]] )
         selected_dates = [date1, date2, date3]
         colors = ['blue', 'green', 'red']
         fig = go.Figure()
