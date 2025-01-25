@@ -88,77 +88,77 @@ if plot_type == "MPBX":
         )
         st.plotly_chart(fig)
     
-elif plot_option == "Displacement vs Length along MPBX":
-    date1 = st.selectbox("Select First Date", df['DATE'].unique())
-    date2 = st.selectbox("Select Second Date", df['DATE'].unique())
-    date3 = st.selectbox("Select Third Date", df['DATE'].unique())
-    selected_dates = [date1, date2, date3]
-    colors = ['blue', 'green', 'red']
-    fig = go.Figure()
-    
-    for i, date in enumerate(selected_dates):
-        subset = df[df['DATE'] == date]
-    
-        if subset.empty:
-            st.warning(f"No data available for date: {date}")
-            continue
-    
-        collar_depth_1 = (
-            str(subset['Collar Depth 1'].iloc[0])[:3]
-            if pd.notna(subset['Collar Depth 1'].iloc[0])
-            else 'N/A'
+    elif plot_option == "Displacement vs Length along MPBX":
+        date1 = st.selectbox("Select First Date", df['DATE'].unique())
+        date2 = st.selectbox("Select Second Date", df['DATE'].unique())
+        date3 = st.selectbox("Select Third Date", df['DATE'].unique())
+        selected_dates = [date1, date2, date3]
+        colors = ['blue', 'green', 'red']
+        fig = go.Figure()
+        
+        for i, date in enumerate(selected_dates):
+            subset = df[df['DATE'] == date]
+        
+            if subset.empty:
+                st.warning(f"No data available for date: {date}")
+                continue
+        
+            collar_depth_1 = (
+                str(subset['Collar Depth 1'].iloc[0])[:3]
+                if pd.notna(subset['Collar Depth 1'].iloc[0])
+                else 'N/A'
+            )
+            collar_depth_2 = (
+                str(subset['Collar Depth 2'].iloc[0])[:3]
+                if pd.notna(subset['Collar Depth 2'].iloc[0])
+                else 'N/A'
+            )
+            collar_depth_3 = (
+                str(subset['Collar Depth 3'].iloc[0])[:3]
+                if pd.notna(subset['Collar Depth 3'].iloc[0])
+                else 'N/A'
+            )
+        
+            fig.add_trace(go.Scatter(
+                x=[
+                    subset['Displacement1'].iloc[0], 
+                    subset['Displacement2'].iloc[0], 
+                    subset['Displacement3'].iloc[0]
+                ],
+                y=[
+                    subset['Collar Depth 1'].iloc[0], 
+                    subset['Collar Depth 2'].iloc[0], 
+                    subset['Collar Depth 3'].iloc[0]
+                ],
+                mode='lines+markers',
+                name=f"Date: {date}",
+                line=dict(shape='linear'),
+                marker=dict(size=8, symbol='circle', color=colors[i]),
+                text=[
+                    f"Date: {date}<br>Collar Depth: {collar_depth_1}<br>Displacement: {subset['Displacement1'].iloc[0]} mm",
+                    f"Date: {date}<br>Collar Depth: {collar_depth_2}<br>Displacement: {subset['Displacement2'].iloc[0]} mm",
+                    f"Date: {date}<br>Collar Depth: {collar_depth_3}<br>Displacement: {subset['Displacement3'].iloc[0]} mm"
+                ],
+                hovertemplate="%{text}<extra></extra>"
+            ))
+        
+        fig.update_layout(
+            title={
+                'text': "Displacement vs Length along MPBX",
+                'y': 0.95,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+            },
+            xaxis_title=dict(text="Displacement (mm)", font=dict(size=20)),
+            yaxis_title=dict(text="Length along MPBX (m)", font=dict(size=20)),
+            hovermode='x unified',
+            height=500,
+            showlegend=True,
+            xaxis=dict(showline=True, linewidth=2, linecolor='black'),
+            yaxis=dict(autorange='reversed', showline=True, linewidth=2, linecolor='black')
         )
-        collar_depth_2 = (
-            str(subset['Collar Depth 2'].iloc[0])[:3]
-            if pd.notna(subset['Collar Depth 2'].iloc[0])
-            else 'N/A'
-        )
-        collar_depth_3 = (
-            str(subset['Collar Depth 3'].iloc[0])[:3]
-            if pd.notna(subset['Collar Depth 3'].iloc[0])
-            else 'N/A'
-        )
-    
-        fig.add_trace(go.Scatter(
-            x=[
-                subset['Displacement1'].iloc[0], 
-                subset['Displacement2'].iloc[0], 
-                subset['Displacement3'].iloc[0]
-            ],
-            y=[
-                subset['Collar Depth 1'].iloc[0], 
-                subset['Collar Depth 2'].iloc[0], 
-                subset['Collar Depth 3'].iloc[0]
-            ],
-            mode='lines+markers',
-            name=f"Date: {date}",
-            line=dict(shape='linear'),
-            marker=dict(size=8, symbol='circle', color=colors[i]),
-            text=[
-                f"Date: {date}<br>Collar Depth: {collar_depth_1}<br>Displacement: {subset['Displacement1'].iloc[0]} mm",
-                f"Date: {date}<br>Collar Depth: {collar_depth_2}<br>Displacement: {subset['Displacement2'].iloc[0]} mm",
-                f"Date: {date}<br>Collar Depth: {collar_depth_3}<br>Displacement: {subset['Displacement3'].iloc[0]} mm"
-            ],
-            hovertemplate="%{text}<extra></extra>"
-        ))
-    
-    fig.update_layout(
-        title={
-            'text': "Displacement vs Length along MPBX",
-            'y': 0.95,
-            'x': 0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'
-        },
-        xaxis_title=dict(text="Displacement (mm)", font=dict(size=20)),
-        yaxis_title=dict(text="Length along MPBX (m)", font=dict(size=20)),
-        hovermode='x unified',
-        height=500,
-        showlegend=True,
-        xaxis=dict(showline=True, linewidth=2, linecolor='black'),
-        yaxis=dict(autorange='reversed', showline=True, linewidth=2, linecolor='black')
-    )
-    st.plotly_chart(fig)
+        st.plotly_chart(fig)
 
 
 elif plot_type == "Pressure Cell":
