@@ -69,7 +69,7 @@ This repository contains the implementation of my Bachelor Thesis Project: **Ana
 
 1. **Run the Dashboard**:
     
-   Open the app in your browser at `(https://stratamonitoring.streamlit.app/)`.
+   Open the app in your browser at `https://stratamonitoring.streamlit.app`.
 
 3. **Train Models**:
    - Scripts for training LSTM, GRU, and RF models are in the `models/` directory.
