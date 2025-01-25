@@ -85,5 +85,16 @@ if plot_type == "MPBX":
 elif plot_type == "Pressure Cell":
     df = pressure_dfs[int(selected_index.split("-")[1])]
     fig = go.Figure(go.Scatter(x=df['Unnamed: 0'], y=df['Pressure Develop (Kg/cm^2)'], mode='lines+markers'))
-    fig.update_layout(title="Pressure Develop Over Time", xaxis_title="Date", yaxis_title="Pressure (Kg/cm^2)")
+    fig.update_layout(
+        title={
+            'text': "Pressure Develop Over Time",
+            'y': 0.95,  # Adjust vertical position of title
+            'x': 0.5,   # Center align title
+            'xanchor': 'center',
+            'yanchor': 'top'
+        },
+        xaxis_title="Date",
+        yaxis_title="Pressure (Kg/cm^2)",
+        title_font=dict(size=20),  # Adjust font size
+    )
     st.plotly_chart(fig)
