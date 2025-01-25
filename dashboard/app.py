@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+import math
 
 # Load Excel sheets
 mpbx_data = pd.read_excel(r"dashboard/MPBX AS ON 13.11.2024.xlsx", sheet_name=None)
@@ -33,6 +34,11 @@ for i in range(0, len(names), 3):
     convergence2 = deformation2.diff().fillna(0)
     convergence3 = deformation3.diff().fillna(0)
 
+    #displacements
+    displacement1 = sheet1['Unnamed: 8'] 
+    displacement2 = sheet2['Unnamed: 8'] 
+    displacement3 = sheet3['Unnamed: 8'] 
+
     mpbx_dfs.append(pd.DataFrame({
         'DATE': sheet1['Unnamed: 0'],
         'Deformation1': deformation1,
@@ -43,7 +49,10 @@ for i in range(0, len(names), 3):
         'Collar Depth 3': sheet3['Unnamed: 4'],
         'Convergence1': convergence1,
         'Convergence2': convergence2,
-        'Convergence3': convergence3
+        'Convergence3': convergence3,
+        'Displacement1' : displacement1,
+        'Displacement2' : displacement2,
+        'Displacement3' :  displacement3 
     }))
 
 # Streamlit App
@@ -58,10 +67,10 @@ selected_index = st.selectbox(
 
 if plot_type == "MPBX":
     df = mpbx_dfs[int(selected_index.split("-")[1])]
-    plot_option = st.radio("Select Plot", ["Convergence vs Date", "Deformation vs Collar Depth"])
+    plot_option = st.radio("Select Plot", ["Convergence vs Date", "Displacement vs Length along MPBX"])
     
     if plot_option == "Convergence vs Date":
-        collar_depths = st.multiselect("Select Collar Depths", ["Convergence1", "Convergence2", "Convergence3"])
+        collar_depths = st.multiselect("Select Collar Depths", ["Convergence1", "Convergence2", "Convergence3"],default=["Convergence1", "Convergence2", "Convergence3"])
         fig = go.Figure()
         for col in collar_depths:
             fig.add_trace(go.Scatter(x=df['DATE'], y=df[col], mode='lines+markers', name=col))
@@ -79,28 +88,78 @@ if plot_type == "MPBX":
         )
         st.plotly_chart(fig)
     
-    elif plot_option == "Deformation vs Collar Depth":
-        selected_dates = st.multiselect("Select Dates", df['DATE'].unique())
-        fig = go.Figure()
-        for date in selected_dates:
+    elif plot_option == "Displacement vs Length along MPBX":
+        date1 = st.multiselect("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[0]] )
+        date2 = st.multiselect("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[1]] )
+        date3 = st.multiselect("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[2]] )
+        selected_dates = [date1, date2, date3]
+        colors = ['blue', 'green', 'red']
+        
+    
+        for i, date in enumerate(selected_dates):
             subset = df[df['DATE'] == date]
+
+            if (len(date) > 11) :
+                date=date[:-9]
+
+            collar_depth_1 = (
+                    str(date_df['Collar Depth 1'].iloc[0])[:3] 
+                    if isinstance(date_df['Collar Depth 1'].iloc[0], str) 
+                    else str(int(date_df['Collar Depth 1'].iloc[0])) 
+                    if not math.isnan(date_df['Collar Depth 1'].iloc[0]) 
+                    else 'N/A'
+                )
+                
+            collar_depth_2 = (
+                    str(date_df['Collar Depth 2'].iloc[0])[:3] 
+                    if isinstance(date_df['Collar Depth 2'].iloc[0], str) 
+                    else str(int(date_df['Collar Depth 2'].iloc[0])) 
+                    if not math.isnan(date_df['Collar Depth 2'].iloc[0]) 
+                    else 'N/A'
+                )
+
+            collar_depth_3 = (
+                    str(date_df['Collar Depth 3'].iloc[0])[:3] 
+                    if isinstance(date_df['Collar Depth 3'].iloc[0], str) 
+                    else str(int(date_df['Collar Depth 3'].iloc[0])) 
+                    if not math.isnan(date_df['Collar Depth 3'].iloc[0]) 
+                    else 'N/A'
+                )
+                
             fig.add_trace(go.Scatter(
-                x=[subset['Deformation1'], subset['Deformation2'], subset['Deformation3']],
+                x=[date_df['Displacement1'].iloc[0], date_df['Displacement2'].iloc[0], date_df['Displacement3'].iloc[0]],
                 y=[subset['Collar Depth 1'], subset['Collar Depth 2'], subset['Collar Depth 3']],
-                mode='lines+markers',
-                name=f"Date: {date}"
+                mode='lines+markers',  # Line graph connecting the points for each date
+                name=f"Date: {date}",
+                line=dict(shape='linear'),
+                marker=dict(size=8, symbol='circle', color=colors[i]),
+
+                 # Creating a list of hovertexts for each displacement point
+                hovertext=[
+                   f"Date: {date}<br>Collar Depth :{collar_depth_1}<br>Displacement: {date_df['Displacement1'].iloc[0]} mm",
+                   f"Date: {date}<br>Collar Depth :{collar_depth_2}<br>Displacement: {date_df['Displacement2'].iloc[0]} mm",
+                   f"Date: {date}<br>Collar Depth :{collar_depth_3}<br>Displacement: {date_df['Displacement3'].iloc[0]} mm"
+                ],
+    
+                # Use hovertemplate to display the hovertext for each point
+                hovertemplate="%{hovertext}<extra></extra>"
+            
             ))
         fig.update_layout(
             title={
-                'text': "Deformation vs Collar Depth",
+                'text': "Displacement vs Length along MPBX",
                 'y': 0.95,
                 'x' : 0.5,
                 'xanchor': 'center',
                 'yanchor': 'top'
             },
-            xaxis_title="Deformation",
-            yaxis_title="Collar Depth",
-            title_font=dict(size=20),
+            xaxis_title=dict(text="Displacement (mm)", font=dict(size=20, weight='bold')),
+            yaxis_title=dict(text="Length along MPBX (m)", font=dict(size=20, weight='bold')),
+            hovermode='x unified',
+            height=500,
+            showlegend=True,
+            xaxis=dict(showline=True, linewidth=2, linecolor='black'),
+            yaxis=dict(autorange='reversed', showline=True, linewidth=2, linecolor='black', tickfont=dict(size=10))
         )
         st.plotly_chart(fig)
 
