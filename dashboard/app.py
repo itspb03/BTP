@@ -103,31 +103,31 @@ if plot_type == "MPBX":
                 date=date[:-9]
 
             collar_depth_1 = (
-                    str(date_df['Collar Depth 1'].iloc[0])[:3] 
-                    if isinstance(date_df['Collar Depth 1'].iloc[0], str) 
-                    else str(int(date_df['Collar Depth 1'].iloc[0])) 
-                    if not math.isnan(date_df['Collar Depth 1'].iloc[0]) 
+                    str(subset['Collar Depth 1'].iloc[0])[:3] 
+                    if isinstance(subset['Collar Depth 1'].iloc[0], str) 
+                    else str(int(subset['Collar Depth 1'].iloc[0])) 
+                    if not math.isnan(subset['Collar Depth 1'].iloc[0]) 
                     else 'N/A'
                 )
                 
             collar_depth_2 = (
-                    str(date_df['Collar Depth 2'].iloc[0])[:3] 
-                    if isinstance(date_df['Collar Depth 2'].iloc[0], str) 
-                    else str(int(date_df['Collar Depth 2'].iloc[0])) 
-                    if not math.isnan(date_df['Collar Depth 2'].iloc[0]) 
+                    str(subset['Collar Depth 2'].iloc[0])[:3] 
+                    if isinstance(subset['Collar Depth 2'].iloc[0], str) 
+                    else str(int(subset['Collar Depth 2'].iloc[0])) 
+                    if not math.isnan(subset['Collar Depth 2'].iloc[0]) 
                     else 'N/A'
                 )
 
             collar_depth_3 = (
                     str(date_df['Collar Depth 3'].iloc[0])[:3] 
-                    if isinstance(date_df['Collar Depth 3'].iloc[0], str) 
-                    else str(int(date_df['Collar Depth 3'].iloc[0])) 
-                    if not math.isnan(date_df['Collar Depth 3'].iloc[0]) 
+                    if isinstance(subset['Collar Depth 3'].iloc[0], str) 
+                    else str(int(subset['Collar Depth 3'].iloc[0])) 
+                    if not math.isnan(subset['Collar Depth 3'].iloc[0]) 
                     else 'N/A'
                 )
                 
             fig.add_trace(go.Scatter(
-                x=[date_df['Displacement1'].iloc[0], date_df['Displacement2'].iloc[0], date_df['Displacement3'].iloc[0]],
+                x=[subset['Displacement1'].iloc[0], subset['Displacement2'].iloc[0], subset['Displacement3'].iloc[0]],
                 y=[subset['Collar Depth 1'], subset['Collar Depth 2'], subset['Collar Depth 3']],
                 mode='lines+markers',  # Line graph connecting the points for each date
                 name=f"Date: {date}",
