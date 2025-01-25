@@ -65,7 +65,18 @@ if plot_type == "MPBX":
         fig = go.Figure()
         for col in collar_depths:
             fig.add_trace(go.Scatter(x=df['DATE'], y=df[col], mode='lines+markers', name=col))
-        fig.update_layout(title="Convergence vs Date", xaxis_title="Date", yaxis_title="Convergence (mm)")
+        fig.update_layout(
+            title={
+                'text': "Convergence vs Date",
+                'y': 0.95,
+                'x' : 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+            }, 
+            xaxis_title="Date", 
+            yaxis_title="Convergence (mm)",
+            title_font=dict(size=20),
+        )
         st.plotly_chart(fig)
     
     elif plot_option == "Deformation vs Collar Depth":
@@ -79,7 +90,18 @@ if plot_type == "MPBX":
                 mode='lines+markers',
                 name=f"Date: {date}"
             ))
-        fig.update_layout(title="Deformation vs Collar Depth", xaxis_title="Deformation", yaxis_title="Collar Depth")
+        fig.update_layout(
+            title={
+                'text': "Deformation vs Collar Depth",
+                'y': 0.95,
+                'x' : 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+            },
+            xaxis_title="Deformation",
+            yaxis_title="Collar Depth",
+            title_font=dict(size=20),
+        )
         st.plotly_chart(fig)
 
 elif plot_type == "Pressure Cell":
