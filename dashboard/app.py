@@ -94,6 +94,7 @@ if plot_type == "MPBX":
         date3 = st.multiselect("Select Date", df['DATE'].unique(),default=[df['DATE'].unique()[2]] )
         selected_dates = [date1, date2, date3]
         colors = ['blue', 'green', 'red']
+        figb= go.figure()
         
     
         for i, date in enumerate(selected_dates):
