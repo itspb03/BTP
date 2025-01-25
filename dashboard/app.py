@@ -137,9 +137,9 @@ if plot_type == "MPBX":
 
                  # Creating a list of hovertexts for each displacement point
                 hovertext=[
-                   f"Date: {date}<br>Collar Depth :{collar_depth_1}<br>Displacement: {date_df['Displacement1'].iloc[0]} mm",
-                   f"Date: {date}<br>Collar Depth :{collar_depth_2}<br>Displacement: {date_df['Displacement2'].iloc[0]} mm",
-                   f"Date: {date}<br>Collar Depth :{collar_depth_3}<br>Displacement: {date_df['Displacement3'].iloc[0]} mm"
+                   f"Date: {date}<br>Collar Depth :{collar_depth_1}<br>Displacement: {subset['Displacement1'].iloc[0]} mm",
+                   f"Date: {date}<br>Collar Depth :{collar_depth_2}<br>Displacement: {subset['Displacement2'].iloc[0]} mm",
+                   f"Date: {date}<br>Collar Depth :{collar_depth_3}<br>Displacement: {subset['Displacement3'].iloc[0]} mm"
                 ],
     
                 # Use hovertemplate to display the hovertext for each point
