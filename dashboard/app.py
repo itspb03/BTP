@@ -16,7 +16,7 @@ uploaded_pressure_file = st.sidebar.file_uploader("Upload Pressure Cell Excel Sh
 if uploaded_mpbx_file is not None:
     mpbx_data = pd.read_excel(uploaded_mpbx_file, sheet_name=None)
 else:
-    mpbx_data = pd.read_excel(r"C:\Users\prana\BTP\MPBX AS ON 13.11.2024.xlsx", sheet_name=None)
+    mpbx_data = pd.read_excel(r"dashboard/MPBX AS ON 13.11.2024.xlsx", sheet_name=None)
 
 if uploaded_pressure_file is not None:
     pressure_data = pd.read_excel(uploaded_pressure_file, sheet_name=None)
