@@ -2,26 +2,53 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-import math
+import re
 
-# Load Excel sheets
-mpbx_data = pd.read_excel(r"dashboard/MPBX AS ON 13.11.2024.xlsx", sheet_name=None)
-pressure_data = pd.read_excel(r"dashboard/PRESSURE CELL AS ON 13.11.2024.xlsx", sheet_name=None)
+st.set_page_config(layout="wide")
+st.title("MPBX & Pressure Cell Data Analysis")
 
-pd.set_option('future.no_silent_downcasting', True)
+# File upload
+st.sidebar.header("Upload Excel Files (Optional)")
+uploaded_mpbx_file = st.sidebar.file_uploader("Upload MPBX Excel Sheet", type=["xlsx"])
+uploaded_pressure_file = st.sidebar.file_uploader("Upload Pressure Cell Excel Sheet", type=["xlsx"])
+
+# Load Excel Sheets
+if uploaded_mpbx_file is not None:
+    mpbx_data = pd.read_excel(uploaded_mpbx_file, sheet_name=None)
+else:
+    mpbx_data = pd.read_excel(r"C:\Users\prana\BTP\MPBX AS ON 13.11.2024.xlsx", sheet_name=None)
+
+if uploaded_pressure_file is not None:
+    pressure_data = pd.read_excel(uploaded_pressure_file, sheet_name=None)
+else:
+    pressure_data = pd.read_excel(r"C:\Users\prana\BTP\PRESSURE CELL AS ON 13.11.2024.xlsx", sheet_name=None)
+
 
 # Process Pressure Data
 pressure_dfs = []
-for name, sheet_df in pressure_data.items():
-    sheet_df = sheet_df[['Unnamed: 0', 'Unnamed: 4', 'Unnamed: 8']].drop(0)
-    sheet_df['Pressure Develop (Kg/cm^2)'] = -sheet_df['Unnamed: 8']
-    pressure_dfs.append(sheet_df)
+pressure_locations = []
 
+for name, sheet_df in pressure_data.items():
+    location_row = sheet_df.iloc[0].astype(str).str.cat(sep=" ")
+    match = re.search(r"Location\s*\(?([^)]+)", location_row, re.IGNORECASE)
+    location_str = match.group(1).strip() if match else "Unknown"
+
+    sheet_df = sheet_df[['Unnamed: 0', 'Unnamed: 2', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 8']].drop(0)
+    sheet_df['Pressure Develop (Kg/cm^2)'] = -sheet_df['Unnamed: 8']
+
+    pressure_dfs.append(sheet_df)
+    pressure_locations.append(location_str)
 
 # Process MPBX Data
 mpbx_dfs = []
+mpbx_locations = []
 names = list(mpbx_data.keys())
+
 for i in range(0, len(names), 3):
+    location_row = mpbx_data[names[i]].iloc[0].astype(str).str.cat(sep=" ")
+    match = re.search(r"Location\s*\(?([^)]+)", location_row, re.IGNORECASE)
+    location_str = match.group(1).strip() if match else "Unknown"
+
     sheet1 = mpbx_data[names[i]].drop(0)
     sheet2 = mpbx_data[names[i+1]].drop(0)
     sheet3 = mpbx_data[names[i+2]].drop(0)
@@ -34,13 +61,13 @@ for i in range(0, len(names), 3):
     convergence2 = deformation2.diff().fillna(0)
     convergence3 = deformation3.diff().fillna(0)
 
-    #displacements
-    displacement1 = sheet1['Unnamed: 8'] 
-    displacement2 = sheet2['Unnamed: 8'] 
-    displacement3 = sheet3['Unnamed: 8'] 
+    displacement1 = sheet1['Unnamed: 8']
+    displacement2 = sheet2['Unnamed: 8']
+    displacement3 = sheet3['Unnamed: 8']
 
-    mpbx_dfs.append(pd.DataFrame({
+    df = pd.DataFrame({
         'DATE': sheet1['Unnamed: 0'],
+        'Location': sheet1['Unnamed: 2'],
         'Deformation1': deformation1,
         'Deformation2': deformation2,
         'Deformation3': deformation3,
@@ -50,44 +77,58 @@ for i in range(0, len(names), 3):
         'Convergence1': convergence1,
         'Convergence2': convergence2,
         'Convergence3': convergence3,
-        'Displacement1' : displacement1,
-        'Displacement2' : displacement2,
-        'Displacement3' :  displacement3 
-    }))
+        'Displacement1': displacement1,
+        'Displacement2': displacement2,
+        'Displacement3': displacement3
+    })
 
-# Streamlit App
-st.title("MPBX & Pressure Cell Data Analysis")
+    mpbx_dfs.append(df)
+    mpbx_locations.append(location_str)
 
-# Dropdown for plot selection
+
+# Streamlit UI
 plot_type = st.selectbox("Select Plot Type", ["MPBX", "Pressure Cell"])
-selected_index = st.selectbox(
-    f"Select {plot_type} Plot",
-    [f"{plot_type} - {i}" for i in range(len(mpbx_dfs) if plot_type == "MPBX" else len(pressure_dfs))]
-)
 
 if plot_type == "MPBX":
-    df = mpbx_dfs[int(selected_index.split("-")[1])]
+    selected_index = st.selectbox(
+        "Select MPBX Plot",
+        [f"MPBX - {i}" for i in range(len(mpbx_dfs))]
+    )
+    index = int(selected_index.split("-")[1])
+    df = mpbx_dfs[index]
+    location = mpbx_locations[index]
+
     plot_option = st.radio("Select Plot", ["Convergence vs Date", "Displacement vs Length along MPBX"])
-    
+
+    st.markdown(f"**Location:** {location}")
+
     if plot_option == "Convergence vs Date":
-        collar_depths = st.multiselect("Select Collar Depths", ["Convergence1", "Convergence2", "Convergence3"],default=["Convergence1", "Convergence2", "Convergence3"])
+        collar_depths = {
+            "Convergence1": df['Collar Depth 1'].iloc[0],
+            "Convergence2": df['Collar Depth 2'].iloc[0],
+            "Convergence3": df['Collar Depth 3'].iloc[0]
+        }
+
+        selected_curves = st.multiselect(
+            "Select Collar Depths",
+            list(collar_depths.keys()),
+            default=list(collar_depths.keys())
+        )
+
         fig = go.Figure()
-        for col in collar_depths:
-            fig.add_trace(go.Scatter(x=df['DATE'], y=df[col], mode='lines+markers', name=col))
+        for col in selected_curves:
+            depth = collar_depths[col]
+            label = f"{col} (Collar Depth: {depth} m)"
+            fig.add_trace(go.Scatter(x=df['DATE'], y=df[col], mode='lines+markers', name=label))
+
         fig.update_layout(
-            title={
-                'text': "Convergence vs Date",
-                'y': 0.95,
-                'x' : 0.5,
-                'xanchor': 'center',
-                'yanchor': 'top'
-            }, 
-            xaxis_title="Date", 
+            title=dict(text="Convergence vs Date", y=0.95, x=0.5, xanchor='center', yanchor='top'),
+            xaxis_title="Date",
             yaxis_title="Convergence (mm)",
             title_font=dict(size=20),
         )
         st.plotly_chart(fig)
-    
+
     elif plot_option == "Displacement vs Length along MPBX":
         date1 = st.selectbox("Select First Date", df['DATE'].unique())
         date2 = st.selectbox("Select Second Date", df['DATE'].unique())
@@ -95,61 +136,30 @@ if plot_type == "MPBX":
         selected_dates = [date1, date2, date3]
         colors = ['blue', 'green', 'red']
         fig = go.Figure()
-        
+
         for i, date in enumerate(selected_dates):
             subset = df[df['DATE'] == date]
-        
             if subset.empty:
                 st.warning(f"No data available for date: {date}")
                 continue
-        
-            collar_depth_1 = (
-                str(subset['Collar Depth 1'].iloc[0])[:3]
-                if pd.notna(subset['Collar Depth 1'].iloc[0])
-                else 'N/A'
-            )
-            collar_depth_2 = (
-                str(subset['Collar Depth 2'].iloc[0])[:3]
-                if pd.notna(subset['Collar Depth 2'].iloc[0])
-                else 'N/A'
-            )
-            collar_depth_3 = (
-                str(subset['Collar Depth 3'].iloc[0])[:3]
-                if pd.notna(subset['Collar Depth 3'].iloc[0])
-                else 'N/A'
-            )
-        
+
             fig.add_trace(go.Scatter(
-                x=[
-                    subset['Displacement1'].iloc[0], 
-                    subset['Displacement2'].iloc[0], 
-                    subset['Displacement3'].iloc[0]
-                ],
-                y=[
-                    subset['Collar Depth 1'].iloc[0], 
-                    subset['Collar Depth 2'].iloc[0], 
-                    subset['Collar Depth 3'].iloc[0]
-                ],
+                x=[subset['Displacement1'].iloc[0], subset['Displacement2'].iloc[0], subset['Displacement3'].iloc[0]],
+                y=[subset['Collar Depth 1'].iloc[0], subset['Collar Depth 2'].iloc[0], subset['Collar Depth 3'].iloc[0]],
                 mode='lines+markers',
                 name=f"Date: {date}",
                 line=dict(shape='linear'),
                 marker=dict(size=8, symbol='circle', color=colors[i]),
                 text=[
-                    f"Date: {date}<br>Collar Depth: {collar_depth_1}<br>Displacement: {subset['Displacement1'].iloc[0]} mm",
-                    f"Date: {date}<br>Collar Depth: {collar_depth_2}<br>Displacement: {subset['Displacement2'].iloc[0]} mm",
-                    f"Date: {date}<br>Collar Depth: {collar_depth_3}<br>Displacement: {subset['Displacement3'].iloc[0]} mm"
+                    f"Date: {date}<br>Collar Depth: {subset['Collar Depth 1'].iloc[0]}<br>Displacement: {subset['Displacement1'].iloc[0]} mm",
+                    f"Date: {date}<br>Collar Depth: {subset['Collar Depth 2'].iloc[0]}<br>Displacement: {subset['Displacement2'].iloc[0]} mm",
+                    f"Date: {date}<br>Collar Depth: {subset['Collar Depth 3'].iloc[0]}<br>Displacement: {subset['Displacement3'].iloc[0]} mm"
                 ],
                 hovertemplate="%{text}<extra></extra>"
             ))
-        
+
         fig.update_layout(
-            title={
-                'text': "Displacement vs Length along MPBX",
-                'y': 0.95,
-                'x': 0.5,
-                'xanchor': 'center',
-                'yanchor': 'top'
-            },
+            title=dict(text="Displacement vs Length along MPBX", y=0.95, x=0.5, xanchor='center', yanchor='top'),
             xaxis_title=dict(text="Displacement (mm)", font=dict(size=20)),
             yaxis_title=dict(text="Length along MPBX (m)", font=dict(size=20)),
             hovermode='x unified',
@@ -160,20 +170,22 @@ if plot_type == "MPBX":
         )
         st.plotly_chart(fig)
 
-
 elif plot_type == "Pressure Cell":
-    df = pressure_dfs[int(selected_index.split("-")[1])]
+    selected_index = st.selectbox(
+        "Select Pressure Cell Plot",
+        [f"Pressure Cell - {i}" for i in range(len(pressure_dfs))]
+    )
+    index = int(selected_index.split("-")[1])
+    df = pressure_dfs[index]
+    location = pressure_locations[index]
+
+    st.markdown(f"**Location:** {location}")
+
     fig = go.Figure(go.Scatter(x=df['Unnamed: 0'], y=df['Pressure Develop (Kg/cm^2)'], mode='lines+markers'))
     fig.update_layout(
-        title={
-            'text': "Pressure Develop Over Time",
-            'y': 0.95,  # Adjust vertical position of title
-            'x': 0.5,   # Center align title
-            'xanchor': 'center',
-            'yanchor': 'top'
-        },
+        title=dict(text="Pressure Develop Over Time", y=0.95, x=0.5, xanchor='center', yanchor='top'),
         xaxis_title="Date",
         yaxis_title="Pressure (Kg/cm^2)",
-        title_font=dict(size=20),  # Adjust font size
+        title_font=dict(size=20),
     )
     st.plotly_chart(fig)
