@@ -23,6 +23,8 @@ if uploaded_pressure_file is not None:
 else:
     pressure_data = pd.read_excel(r"dashboard/PRESSURE CELL AS ON 13.11.2024.xlsx", sheet_name=None)
 
+pd.set_option('future.no_silent_downcasting', True)
+
 
 # Process Pressure Data
 pressure_dfs = []
